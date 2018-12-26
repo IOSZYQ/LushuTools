@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'corsheaders',
     'images',
+
+    'Tools',
+    'Tools_Core',
 ]
 
 MIDDLEWARE = [
@@ -80,10 +83,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'LuShuTools.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -134,48 +133,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    os.path.abspath(os.path.join(BASE_DIR, 'static').replace('\\','/')),
-    ]
-
-MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'media').replace('\\','/'))
-
-TEMP_ROOT = "/tmp/"
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'AnAdmin.authentications.TokenAuthentication',
-#         'AnAdmin.authentications.PlainAuthentication'
-#     )
-# }
-
-CORS_ORIGIN_ALLOW_ALL = True
-
-
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
-
-#
-# TLS(SSL) Settings
-#
-
-USE_TLS = False
-ALWAYS_USE_TLS = False
-ACTIVE_DISABLE_TLS = True
-
-DOMAIN_HOST = 'http://124.65.100.234:9000'
-WEB_DOMAIN_HOST = 'http://124.65.100.234:3000'
-
-# ASGI_APPLICATION = "AnAdmin_Server.routing.application"
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [(secretKeys.REDIS_HOST, secretKeys.REDIS_PORT)],
-        },
-    },
-}
 
 KF5_API_KEY = secretKeys.KF5_API_KEY
 

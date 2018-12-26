@@ -4,7 +4,7 @@ import os
 
 DB_HOST = "127.0.0.1"
 DB_PORT = ""
-DB_NAME = "anselected"
+DB_NAME = "lushutools"
 DB_USER = "root"
 DB_PASSWORD = "1q2w3e4r"
 

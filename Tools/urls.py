@@ -11,7 +11,7 @@ emailUrlPatterns = [
 ]
 
 templateUrlPatterns = [
-    url("list", views.TemplateFind.as_view(), name="Template.List"),
+    url("list/", views.TemplateFind.as_view(), name="Template.List"),
     url("upload", views.TemplateInfo.as_view(), name="Template.Upload"),
     url("delete/(\w+)/", views.TemplateInfo.as_view(), name="Template.Delete")
 ]
@@ -22,6 +22,7 @@ imageUrlPatterns = [
 ]
 
 urlpatterns = [
-    url("emial/", include(emailUrlPatterns)),
-    url("image/", include(imageUrlPatterns))
+    url("email/", include(emailUrlPatterns)),
+    url("image/", include(imageUrlPatterns)),
+    url("template/", include(templateUrlPatterns)),
 ]
