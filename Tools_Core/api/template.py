@@ -13,11 +13,21 @@ def read(**kwargs):
 
     if ids:
         templateIds = djangoUtils.decodeIdList(ids)
-        hasMore = False
+        templateList = Template.objects.filter(pk__in=templateIds).all()
+        total = len(templateList)
     else:
         userId = query.get("userId")
         userId = djangoUtils.decodeId(userId)
-        templateIds = list(Template.objects.filter(publisherId=userId).values_list('id', flat=True))
 
-    templateList = Template.objects.filter(pk__in=templateIds).all()
-    total = len(templateList)
+        last = kwargs.get("last", None)
+        start = kwargs.get("start", 0)
+        count = kwargs.get("count", 24)
+        last = djangoUtils.decodeId(last) if last else 0
+
+        templateQuery = Template.objects.order_by('-id')
+        if last and not start:
+            templateQuery = templateQuery.filter(id__lt=djangoUtils.decodeId(last))
+        templateList = templateQuery[start:start + count]
+        total = templateQuery.count()
+
+    templateData = []

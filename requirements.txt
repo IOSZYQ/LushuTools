@@ -1,6 +1,11 @@
 Django==2.1.4
 pytz==2018.7
+coreapi
 djangorestframework
+markdown
+django-filter
+django-crispy-forms
+django-guardian
 django-oauth-toolkit
 django-cors-headers
 Pillow
@@ -18,4 +23,6 @@ django-celery-results
 django-celery-beat
 django-redis
 celery
+
+
 git+ssh://git@github.com/swolfod/LushuUtils.git
