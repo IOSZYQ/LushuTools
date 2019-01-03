@@ -114,7 +114,8 @@ def saveImage(image, fileName=None, static=False, format="JPEG"):
     #                                  args=(imageName, bufferImageDone, None, static))
     # processThread.start()
 
-    tasks.cloud_image_task.delay(image=imageName, static=static)
+    # tasks.cloud_image_task.delay(image=imageName, static=static)
+    tasks.cloud_image_task(image=imageName, static=static)
 
     return imageName
 

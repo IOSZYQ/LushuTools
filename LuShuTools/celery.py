@@ -3,8 +3,10 @@ import os
 
 from celery import Celery
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'An_Server.settings.prod')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LuShuTools.settings')
 
-app = Celery('An_Server')
+app = Celery('LuShuTools')
+# app = Celery('LuShuTools', broker='redis://127.0.0.1:6379/0')
+# app = Celery('tasks', broker='redis://127.0.0.1:6379/0')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()

@@ -158,3 +158,22 @@ def editorUploadImg(request):
                 }))
 
     raise Http404("Bad Upload")
+
+
+def imageList(request):
+    imageInfo = []
+    for imageName in dataUtils.imageList():
+        imageInfo.append({
+            "imageFile": imageName,
+            "imageUrl": request.build_absolute_uri(imageUtils.imageUrl(imageName))
+        })
+    return respondJson(imageInfo)
+
+def imageDelete(request, imgName):
+    if request.method != "DELETE":
+        return HttpResponseBadRequest()
+
+    # imgName = request.DELETE.get("imgName")
+    imageService.deleteImage(imgName)
+    dataUtils.deleteLocalImage(imgName)
+    return respondJson()

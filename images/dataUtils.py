@@ -28,3 +28,12 @@ def isLocal(imageName):
 def imageRemoted(imageName):
     LocalImage.objects.filter(imageName=imageName).update(ready=True)
     cacheClient.delete("images-local-{}".format(imageName))
+
+
+def imageList():
+    imagesName = LocalImage.objects.values_list('imageName', flat=True).all()
+    return list(imagesName)
+
+
+def deleteLocalImage(imageName):
+    LocalImage.objects.filter(imageName=imageName).delete()

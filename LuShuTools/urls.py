@@ -15,21 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from rest_framework.documentation import include_docs_urls
-from rest_framework.routers import DefaultRouter
 
 from Template.views import TemplateView, TemplateListView, SendEmail
+from Image.views import UploadImageView
 
-
-# router = DefaultRouter()
-#配置template的url
-# router.register(r'template', TemplateInfoViewSet)
-
-
-# template_list = TemplateViewSet.as_view({
-#     'get': 'list',
-#     # 'post': 'create'
-# })
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -39,11 +28,13 @@ urlpatterns = [
     url(r'^template/(\d+)/$', TemplateView.as_view(), name='template_info'),
     url(r'^template/', TemplateView.as_view(), name='template_info'),
 
+
+    url(r'^image/upload/', UploadImageView.as_view(), name='upload_image'),
+    url(r'^image/list/', UploadImageView.as_view(), name='upload_image'),
+
     url(r'^email/', SendEmail.as_view(), name='send_email'),
 
     url(r'^images/', include('images.urls')),
-    url(r'^tools/', include('Tools.urls')),
-    # url(r'template/$', template_list, name='Template')
-    # url(r'^', include(router.urls)),
+
 
 ]

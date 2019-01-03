@@ -11,11 +11,13 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
 import secretKeys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
-SITE_NAME = "LushuTools"
+SITE_NAME = "LuShuTools"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -39,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    "django_celery_results",
+    'django_celery_beat',
+
     'rest_framework',
     'rest_framework.authtoken',
     'sorl.thumbnail',
@@ -46,9 +51,8 @@ INSTALLED_APPS = [
     'images',
 
 
-    'Tools',
-    'Tools_Core',
     'Template',
+    'Image',
 ]
 
 MIDDLEWARE = [
@@ -169,8 +173,8 @@ QINIU_STATIC_DOMAIN = secretKeys.QINIU_STATIC_DOMAIN
 # celery  配置
 CELERY_BROKER_URL = 'redis://{0}:{1}/0'.format(secretKeys.REDIS_HOST, secretKeys.REDIS_PORT)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Shanghai'
 # CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
@@ -180,4 +184,5 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 1
 }
 
-TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates/')
+TEMPLATE_DIR = os.path.join(MEDIA_ROOT, 'templates/')
+IMAGE_DIR = os.path.join(MEDIA_ROOT, 'images/')

@@ -26,7 +26,9 @@ def imageFormat(imageName):
 
 def remoteCacheImage(imageName, successHandler=None, failHandler=None, static=False):
     q = qiniu.Auth(AccessKey, SecretKey)
-    key = imageName
+    # imageName = 'images/' + imageName
+    # key = imageName
+    key = 'images/' + imageName
 
     formatInfo = imageFormat(imageName)
 
@@ -48,7 +50,8 @@ def remoteCacheImage(imageName, successHandler=None, failHandler=None, static=Fa
 def remoteImageUrl(imageName, width=None, height=None, minSize=False, static=False):
     q = qiniu.Auth(AccessKey, SecretKey)
 
-    key = imageName
+    # key = imageName
+    key = 'images/' + imageName
     base_url = 'https://%s/%s?imageView2/%d' % (
         remote_domain if not static else static_remote_domain, key, 1 if minSize else 2)
 
@@ -61,3 +64,21 @@ def remoteImageUrl(imageName, width=None, height=None, minSize=False, static=Fal
     base_url += "/interlace/1/q/95"
 
     return q.private_download_url(base_url, expires=3600) if IMAGE_PRIVATE else base_url
+
+
+def deleteImage(imageName):
+    key = 'images/' + imageName
+    q = qiniu.Auth(AccessKey, SecretKey)
+    ret, info = qiniu.BucketManager(q).delete(bucket_name, key)
+    if ret and ret.get('key', None) == key:
+        return True
+    return False
+
+def deleteImages(imageNames):
+    imageNames = imageNames if isinstance(imageNames, list) else [imageNames]
+    keys = ['images/' + imageName for imageName in imageNames]
+
+    q = qiniu.Auth(AccessKey, SecretKey)
+    bucket = qiniu.BucketManager(q)
+    ops = qiniu.build_batch_delete(bucket_name, keys)
+    ret, info = bucket.batch(ops)

@@ -5,6 +5,9 @@ from django.conf.urls import *
 from images.views import *
 
 urlpatterns = [
+   url(r"^list/$", imageList, name="images.views.getList"),
+   url(r"^delete/(\w+)/$", imageDelete, name="images.views.delete"),
+
    url(r"^status/$", getStatus, name="images.views.getImage"),
    url(r"^status/(\w+)/$", getStatus, name="images.views.getImage"),
 
