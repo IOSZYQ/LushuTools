@@ -74,7 +74,7 @@ ROOT_URLCONF = 'LuShuTools.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'templates/mail')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -123,9 +123,9 @@ CACHES = {
 LANGUAGE_CODE = 'zh_hans'
 LOCALE_PATHS =(os.path.join(BASE_DIR, 'locale').replace('\\','/'),)
 
-MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'media').replace('\\','/'))
+# MEDIA_URL = '/media/'
+#
+# MEDIA_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'media').replace('\\','/'))
 
 GOOGLE_LANGUAGE_CODE = 'zh-CN' #en
 
@@ -184,5 +184,5 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 1
 }
 
-TEMPLATE_DIR = os.path.join(MEDIA_ROOT, 'templates/')
-IMAGE_DIR = os.path.join(MEDIA_ROOT, 'images/')
+# TEMPLATE_DIR = os.path.join(MEDIA_ROOT, 'templates/')
+# IMAGE_DIR = os.path.join(MEDIA_ROOT, 'images/')

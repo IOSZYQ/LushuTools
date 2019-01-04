@@ -22,3 +22,10 @@ def sendToEmails(sendTo="Tos"):
         return ['alan@lushu.co', 'hualing_zyq@126.com']
     else:
         return ['416834256@qq.com']
+
+@shared_task
+def job(x=9,y=9):
+    print(x)
+    print(y)
+    print("x+y={}".format(x+y))
+    return x + y

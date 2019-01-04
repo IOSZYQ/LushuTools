@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Template(models.Model):
-    file = models.FileField(verbose_name="模板文件", upload_to="templates", null=True)
+    file = models.FileField(verbose_name="模板文件", null=True)
 
     class Meta:
         verbose_name = "Html模板"
