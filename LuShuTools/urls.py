@@ -16,11 +16,13 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from Template.views import TemplateView, TemplateListView, SendEmail
+from Template.views import TemplateView, TemplateListView, SendEmail, ToolsView
 from Image.views import UploadImageView
 
 
 urlpatterns = [
+    url(r'^$', ToolsView.as_view(), name='tool_list'),
+
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls')),
     # url(r'docs/$', include_docs_urls(title="路书工具")),

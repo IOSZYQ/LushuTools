@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>路书</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.4.4/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="signin.css" rel="stylesheet">
+    <style>
+        a, a:hover{
+            text-decoration: none;
+        }
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus,input,button,select {
+            outline: none;
+            box-shadow:none;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .file-content {
+            height: 80px;
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .file-content label {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 100%;
+            line-height: 80px;
+            text-align: center;
+        }
+
+        .file-dom-img, .file-dom-email {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .img-content {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .email-content li{
+            padding:10px 20px;
+            position: relative;
+            border-bottom:1px solid #ddd;
+        }
+
+        .list-title {
+            margin: 50px 0;
+        }
+
+        .img-content li {
+            width: 23%;
+            margin-right: 2%;
+            margin-bottom: 18px;
+            list-style: none;
+            position: relative;
+        }
+        .img-content li:hover .img-close-btn{
+            display: block;
+        }
+
+        .img-content li img {
+            max-width: 100%;
+            width: auto;
+            max-height: 100%;
+            height: auto;
+        }
+        .img-close-btn{
+            display: none;
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            cursor: pointer;
+        }
+        .email-content li:hover .email-close-btn{
+            display: block;
+        }
+        .email-close-btn{
+            display: none;
+            position: absolute;
+            top: 13px;
+            right: 4px;
+            cursor: pointer;
+        }
+        .email-content li a{
+          display: inline-block;
+          max-width: 80%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .send-email{
+          position: absolute;
+          top:6px;
+          right: 60px;
+        }
+        .inp-lab{
+          width: 80px;
+        }
+        .modal input:not([type=radio]), .form-inline textarea.form-control{
+          width: 240px;
+        }
+    </style>
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="container">
+    <ul class="nav nav-tabs js-tab">
+        <li role="presentation" class="active"><a href="#">图片列表</a></li>
+        <li role="presentation"><a href="#">邮件列表</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="content-list">
+            <div class="file-content">
+                <div>
+                    <label for="file">选择图片</label>
+                    <input type="file" class="file-dom-img" id="file">
+                </div>
+
+            </div>
+            <h3 class="list-title">图片列表</h3>
+            <ul class="img-content js-img-list">
+                <!-- demo -->
+                <!-- <li>
+                    <img data-id="1" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1547541232352&di=22051771d00f4ada5440995992daf244&imgtype=0&src=http%3A%2F%2Fg.hiphotos.baidu.com%2Fimage%2Fpic%2Fitem%2Fe4dde71190ef76c6d1d9c6a49016fdfaaf516731.jpg" alt="">
+                    <i class="glyphicon glyphicon-remove img-close-btn"></i>
+                </li> -->
+                
+            </ul>
+        </div>
+        <div class="content-list"  style="display: none;">
+            <div class="file-content">
+                <div>
+                    <label for="email">选择邮件模板</label>
+                    <input type="file" class="file-dom-email" id="email">
+                </div>
+
+            </div>
+            <h3 class="list-title">邮件模板列表</h3>
+            <ol class="email-content">
+                <!-- demo -->
+                <!-- <li>
+                    <a data-id="1" href="" target="_blank">测试废物家乐福范经理忘记改了；稳如狗刚接了个；二哥哥乌拉圭</a>
+                    <button class="btn btn-sm btn-info send-email" data-toggle="modal" data-target="#myModal" data-id="1">发送邮件</button>
+                    <i class="glyphicon glyphicon-remove email-close-btn"></i>
+                </li>
+                <li>
+                    <a data-id="1" href="" target="_blank">测试废物家乐福范经理忘记改了；稳如狗刚接了个；二哥哥乌拉圭</a>
+                    <button class="btn btn-sm btn-info send-email" data-toggle="modal" data-target="#myModal" data-id="1">发送邮件</button>
+                    <i class="glyphicon glyphicon-remove email-close-btn"></i>
+                </li> -->
+            </ol>
+        </div>
+    </div>
+</div> <!-- /container -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">邮件发送</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group form-inline">
+          <label class="inp-lab">密码：</label>
+          <input type="password" class="form-control" placeholder="密码" name="password">
+        </div>
+        <div class="form-group form-inline">
+          <label class="inp-lab">发送对象：</label>
+          <input type="radio" name="send" id="send-one" value="0" checked>
+          <label for="send-one">单发</label>&nbsp;&nbsp; 
+          <input type="radio" name="send" id="send-more" value="1">
+          <label for="send-more">群发</label>
+        </div>
+        <div class="form-group form-inline">
+          <label class="inp-lab">邮箱地址</label>
+          <input type="text" class="form-control" placeholder="邮箱地址/群发时输入群发组名" name="emailAddress">
+        </div>
+        <div class="form-group form-inline">
+          <label class="inp-lab">邮件标题</label>
+          <input type="text" class="form-control" placeholder="邮件标题" name="emailSubject">
+        </div>
+        <div class="form-group form-inline">
+          <label class="inp-lab">邮件正文</label>
+          <textarea class="form-control" placeholder="邮件正文" rows="3" name="emailContext"></textarea>
+        </div>
+        <div class="form-group form-inline">
+          <label class="inp-lab">定时发送</label>
+          <div class="input-append date form_datetime form-control">
+            <input size="16" type="text" value="" readonly style="border:none;" name="date">
+            <span class="add-on"><i class="icon-remove glyphicon glyphicon-remove"></i></span>
+            <span class="add-on"><i class="icon-calendar glyphicon glyphicon-calendar"></i></span>
+          </div>
+        </div>
+        <div class="form-group form-inline">
+          <label class="inp-lab">邮件配置：</label>
+          <input type="text" class="form-control" placeholder="" name="configure">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info js-send-btn">发送</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal -->
+</div>
+
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.4.4/js/bootstrap-datetimepicker.min.js"></script>
+<script>
+    var sendWay = 0; //  邮件发送方式 默认单发0
+    var emailId; // 邮件模板ID
+    // 获取邮件列表
+    function templateEmail() {
+        $.ajax({
+            url:'template/list/',
+            type:'get',
+            dataTytpe:'json',
+            success:function (res) {
+                var lists = res.result;
+                var html = '';
+                for (var  i = 0; i < lists.length; i++) {
+                    html += '<li><a href="http://'+lists[i].load+'" target="_blank" data-id="'+lists[i].id+'">'+lists[i].file+'</a><button class="btn btn-sm btn-info send-email" data-toggle="modal" data-target="#myModal" data-id="'+lists[i].id+'">发送邮件</button><i class="glyphicon glyphicon-remove email-close-btn"></i></li>';
+                }
+                $('.email-content').html(html);
+
+                //  邮件模板删除
+                $('.email-close-btn').on('click', function () {
+                    var id = $(this).prev().data('id');
+                    $.ajax({
+                        url: 'template/' + id + '/',
+                        type: 'delete',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.success == true) {
+                                $('[data-id=' + id + ']').parent().remove();
+                            }else {
+                                alert(res.result.errMsg);
+                            }
+                        },
+                        error: function () {
+                            alert('删除失败')
+                        }
+                    })
+                });
+
+              // 选择发送邮件
+              $('.send-email').on('click', function () {
+                emailId = $(this).data('id');
+              })
+            },
+            error:function (err) {
+                console.log(err)
+            }
+        })
+    }
+    // 获取图片列表
+    function templateImg() {
+        $.ajax({
+            url:'images/list/',
+            type:'get',
+            dataTytpe:'json',
+            success:function (res) {
+                var lists = JSON.parse(res).result;
+                var html = '';
+                for (var  i = 0; i < lists.length; i++) {
+                    html += '<li><img src="'+lists[i].imageUrl+'" alt="" data-id="'+lists[i].imageFile+'"><i class="glyphicon glyphicon-remove img-close-btn"></i></li>';
+                }
+                $('.img-content').html(html);
+
+                //  图片删除事件
+                $('.img-close-btn').on('click',function () {
+
+                    var id = $(this).prev().data('id');
+                    $.ajax({
+                        url: 'images/delete/' + id + '/',
+                        type: 'delete',
+                        dataType:'json',
+                        success: function (res) {
+                            if (res.success == true) {
+                                $('[data-id=' + id + ']').parent().remove();
+                            }else {
+                                alert(res.result.errMsg);
+                            }
+                        },
+                        error:function () {
+                            alert('删除失败')
+                        }
+                    })
+                })
+
+
+            },
+            error:function (err) {
+                console.log(err)
+            }
+        })
+    }
+
+    $(function () {
+        // templateImg();
+        var $li = $('.js-tab li');
+        $li.on('click', function () {
+            var index = $(this).index();
+            for (var i = 0; i < $li.length; i++) {
+                $li.eq(i).removeClass('active');
+                $('.content-list').eq(i).hide();
+            }
+            $(this).addClass('active')
+            $('.content-list').eq(index).show();
+            {% comment %}{% endcomment %} if (index === 0) {
+                 templateImg();
+             } else {
+                 templateEmail();
+             }
+        });
+        // 初始化时间插件
+        $(".form_datetime").datetimepicker({
+          format: "yyyy-mm-dd hh:ii",
+          autoclose: true,
+          todayBtn: true,
+          minuteStep: 15,
+          startDate: new Date()
+        });
+        // 选择 单发0 群发1  默认单发 0
+        $('input[name=send]').on('change', function (e) {
+          sendWay = $(this).val();
+        })
+        // 点击邮件 发送按钮
+        $('.js-send-btn').on('click',function () {
+          var params  = {
+            password: $('input[name=password]').val(),
+            sendWay: sendWay,
+            sendTo: $('input[name=emailAddress]').val(),
+            subject: $('input[name=emailSubject]').val(),
+            context: $('textarea[name=emailContext]').val(),
+            template: emailId,
+            date: $('input[name=date]').val(),
+            configure: $('input[name=configure]').val(),
+          }
+          $.ajax({
+            url: 'email/',
+            type: 'post',
+            dataType: 'json',
+            data: params,
+            success:function (res) {
+              if (res.success == true) {
+                alert('发送成功');
+                $('#myModal').modal('hide');
+              } else {
+                alert(res.result.errMsg);
+              }
+            },
+            error:function (err) {
+              alert('发送失败');
+            }
+          })
+        })
+        // 上传图片
+        $('.file-dom-img').on('change', function (e) {
+            var file = e.target.files[0];
+            var params = new FileReader()
+            params.readAsDataURL(file);
+            params.onload=function () {
+                var base = params.result; // 图片base64码
+                $.ajax({
+                    url: 'images/upload-data/',
+                    type: 'post',
+                    dataType: 'json',
+                    data: { imgData: base },
+                    success: function (res) {
+                        if (res.success == true) {
+                            alert('上传成功')
+                        }
+                    },
+                    error: function () {
+                        alert('上传失败')
+                    }
+                })
+            }
+        })
+        // 邮件模板上传
+        $('.file-dom-email').on('change', function (e) {
+            var fd = new FormData();
+            fd.append("file", e.target.files[0]);
+            $.ajax({
+                url: 'template/',
+                type: 'post',
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                data: fd,
+                success: function (res) {
+                    if (res.success == 'true') {
+                        alert('上传成功');
+                    }
+                },
+                error: function () {
+                    alert('上传失败')
+                }
+            })
+        })
+    });
+
+</script>
+</body>
+</html>

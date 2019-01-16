@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-import os
+import os, json
 
 from datetime import datetime, timezone, timedelta
 
@@ -16,9 +16,10 @@ from django.template.loader import get_template
 
 
 from .forms import UploadTemplateForm
-from .tasks import sendMultiEmailDelay, sendToEmails, job
+from .tasks import sendMultiEmailDelay, sendToEmails
 
 from secretKeys import TEMPLATE_API_HOST, PASSWORD
+
 
 class TemplateView(APIView):
     def get(self, request, id):
@@ -48,12 +49,10 @@ class TemplateView(APIView):
         file = Template.objects.filter(id=id)
         if len(file):
             file_name = file.first().file
-            file_path = "{}/templates/mail/{}".format(settings.BASE_DIR, file_name)
+            file_path = "{}/templates/mail/{}".format(settings.MEDIA_ROOT, file_name)
             os.unlink(file_path)
         file.delete()
         return viewResponse()
-
-
 
 
 class TemplateListView(APIView):
@@ -71,37 +70,44 @@ class SendEmail(APIView):
             return viewErrorResponse("密码错误")
 
         sendTo = request.data.get("sendTo")
-        group = request.data.get("group")
+        sendWay = request.data.get("sendWay")
         template = request.data.get("template")
         htmlPath = request.data.get("html")
         context = request.data.get("context")
         subject = request.data.get("subject")
+        configure = request.data.get("configure")
         date = request.data.get("date")
 
-        if sendTo is not None:
+        if sendWay == '0':
             sendTo = [sendTo]
         else:
-            sendTo = sendToEmails(group)
+            sendTo = sendToEmails(sendTo)
+        date = date + ':00' if date else date
+
+        configure = json.loads(configure) if configure else {}
 
         template = Template.objects.filter(id=int(template)).first()
 
         if template:
             htmlPath = str(template.file)
 
-        if context:
-            context = {"context": context}
+        htmlContent = get_template(htmlPath).render(configure)
 
-        textContent = None
-        htmlContent = get_template(htmlPath).render(context) if htmlPath else None
-
-        try:
-            tzutc_8 = timezone(timedelta(hours=0))
-            time = datetime.strptime(date, "%Y-%m-%d %H:%M:%S").astimezone(tzutc_8)
-            sendMultiEmailDelay.apply_async(args=(subject, sendTo, textContent, htmlContent), eta=(time), ignore_result=True)
-        except:
-            sendMultiEmailDelay.delay(subject=subject, sendTo=sendTo, textContent=textContent, htmlContent=htmlContent)
+        if date:
+            try:
+                tzutc_8 = timezone(timedelta(hours=0))
+                time = datetime.strptime(date, "%Y-%m-%d %H:%M:%S").astimezone(tzutc_8)
+                sendMultiEmailDelay.apply_async(args=(subject, sendTo, context, htmlContent), eta=(time), ignore_result=True)
+            except:
+                return viewErrorResponse("时间格式不对")
+        else:
+            sendMultiEmailDelay.delay(subject=subject, sendTo=sendTo, textContent=context, htmlContent=htmlContent)
         return viewResponse()
 
+
+class ToolsView(APIView):
+    def get(self, request):
+        return render(request, 'base.html')
 
 
 

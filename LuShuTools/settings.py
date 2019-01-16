@@ -74,9 +74,12 @@ ROOT_URLCONF = 'LuShuTools.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'templates/mail')]
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),
+                 os.path.join(BASE_DIR, 'templates/mail'),
+                 os.path.join(BASE_DIR, 'media/templates/mail'),
+                 ]
         ,
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -123,9 +126,9 @@ CACHES = {
 LANGUAGE_CODE = 'zh_hans'
 LOCALE_PATHS =(os.path.join(BASE_DIR, 'locale').replace('\\','/'),)
 
-# MEDIA_URL = '/media/'
-#
-# MEDIA_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'media').replace('\\','/'))
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'media').replace('\\','/'))
 
 GOOGLE_LANGUAGE_CODE = 'zh-CN' #en
 
@@ -142,9 +145,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
+
 STATICFILES_DIRS = [
     os.path.abspath(os.path.join(BASE_DIR, 'static').replace('\\','/')),
-    ]
+    ("css", os.path.join(STATIC_ROOT, 'bootstrap/css')),
+    ("js", os.path.join(STATIC_ROOT, 'bootstrap/js')),
+
+]
 
 
 KF5_API_KEY = secretKeys.KF5_API_KEY
