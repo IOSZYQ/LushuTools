@@ -22,4 +22,3 @@ db.sqlite3
 .vscode
 .history
 .qiniu*
-secretKeys.py
