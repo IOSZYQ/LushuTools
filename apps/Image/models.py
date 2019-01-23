@@ -4,11 +4,11 @@ from django.db import models
 
 
 class Image(models.Model):
-    image = models.ImageField(verbose_name="图片", upload_to="images")
+    imageName = models.CharField(verbose_name='图片文件名', max_length=64, unique=True)
 
     class Meta:
         verbose_name = "图片"
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return str(self.image.name)
+        return str(self.imageName)

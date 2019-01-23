@@ -1,9 +1,10 @@
 from django.shortcuts import render
 
 # Create your views here.
-import os, json
+import os, json, time, pytz
 
 from datetime import datetime, timezone, timedelta
+
 
 from toolset.viewUtils import viewResponse, viewErrorResponse
 from rest_framework.views import APIView
@@ -11,12 +12,12 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
-from Template.models import Template
+from Template.models import TemplateFile, SendEmailInfo
 from django.template.loader import get_template
 
 
 from .forms import UploadTemplateForm
-from .tasks import sendMultiEmailDelay, sendToEmails
+from .tasks import sendMultiEmailDelay, sendCeleryEmail
 
 from secretKeys import TEMPLATE_API_HOST, PASSWORD
 
@@ -70,38 +71,26 @@ class SendEmail(APIView):
             return viewErrorResponse("密码错误")
 
         sendTo = request.data.get("sendTo")
-        sendWay = request.data.get("sendWay")
-        template = request.data.get("template")
-        htmlPath = request.data.get("html")
-        context = request.data.get("context")
+        sendWay = int(request.data.get("sendWay"))
+        template = int(request.data.get("template"))
+        # htmlPath = request.data.get("html")
+        # context = request.data.get("context")
         subject = request.data.get("subject")
         configure = request.data.get("configure")
         date = request.data.get("date")
 
-        if sendWay == '0':
-            sendTo = [sendTo]
-        else:
-            sendTo = sendToEmails(sendTo)
         date = date + ':00' if date else date
-
-        configure = json.loads(configure) if configure else {}
-
-        template = Template.objects.filter(id=int(template)).first()
-
-        if template:
-            htmlPath = str(template.file)
-
-        htmlContent = get_template(htmlPath).render(configure)
-
         if date:
             try:
-                tzutc_8 = timezone(timedelta(hours=0))
-                time = datetime.strptime(date, "%Y-%m-%d %H:%M:%S").astimezone(tzutc_8)
-                sendMultiEmailDelay.apply_async(args=(subject, sendTo, context, htmlContent), eta=(time), ignore_result=True)
+
+                date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+                # time_struct = time.mktime(date.timetuple())
+                # date = datetime.utcfromtimestamp(time_struct)
             except:
                 return viewErrorResponse("时间格式不对")
+            SendEmailInfo.objects.create(sendTo=sendTo, sendWay=sendWay, template=Template.objects.get(pk=template), subject=subject, dateTime=date)
         else:
-            sendMultiEmailDelay.delay(subject=subject, sendTo=sendTo, textContent=context, htmlContent=htmlContent)
+            sendMultiEmailDelay.delay(subject=subject, sendTo=sendTo, sendWay=sendWay, templateId=template, configure=configure)
         return viewResponse()
 
 

@@ -41,15 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    "django_celery_results",
-    'django_celery_beat',
+    # "django_celery_results",
+    # 'django_celery_beat',
 
     'rest_framework',
     'rest_framework.authtoken',
     'sorl.thumbnail',
     'corsheaders',
     'images',
-
 
     'Template',
     'Image',
@@ -59,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -147,12 +146,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
-STATICFILES_DIRS = [
-    os.path.abspath(os.path.join(BASE_DIR, 'static').replace('\\','/')),
-    ("css", os.path.join(STATIC_ROOT, 'bootstrap/css')),
-    ("js", os.path.join(STATIC_ROOT, 'bootstrap/js')),
+# STATICFILES_DIRS = [
+    # os.path.abspath(os.path.join(BASE_DIR, 'static').replace('\\','/')),
+    # ("css", os.path.join(STATIC_ROOT, 'bootstrap/css')),
+    # ("js", os.path.join(STATIC_ROOT, 'bootstrap/js')),
 
-]
+# ]
 
 
 KF5_API_KEY = secretKeys.KF5_API_KEY

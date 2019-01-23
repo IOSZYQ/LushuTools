@@ -3,10 +3,10 @@ __author__ = 'alan'
 __date__ = '2018/12/29 5:08 PM'
 from django import forms
 
-from .models import Template
+from .models import TemplateFile
 
 
 class UploadTemplateForm(forms.ModelForm):
     class Meta:
-        model = Template
+        model = TemplateFile
         fields = ['file']

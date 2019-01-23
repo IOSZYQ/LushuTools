@@ -35,6 +35,7 @@ EMAIL_HOST_USER = "lushutest@163.com"
 EMAIL_HOST_PASSWORD = "LushuTest123"
 
 TEMPLATE_API_HOST = "127.0.0.1:8000/template/"
+SEND_EMAIL_HOST = "http://127.0.0.1:8001/auth/send-email/"
 
 ADMIN_TOKEN = '1q2w3e4r'
 API_AUTH_TOKEN = 'API_DEVELOP'

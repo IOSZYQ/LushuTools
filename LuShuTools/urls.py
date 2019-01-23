@@ -17,26 +17,20 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 from Template.views import TemplateView, TemplateListView, SendEmail, ToolsView
-from Image.views import UploadImageView
+from Image.views import ImageView, ImageListView
 
 
 urlpatterns = [
     url(r'^$', ToolsView.as_view(), name='tool_list'),
 
-    url(r'^admin/', admin.site.urls),
-    url(r'^api-auth/', include('rest_framework.urls')),
-    # url(r'docs/$', include_docs_urls(title="路书工具")),
     url(r'^template/list/', TemplateListView.as_view(), name='template_list'),
     url(r'^template/(\d+)/$', TemplateView.as_view(), name='template_info'),
     url(r'^template/', TemplateView.as_view(), name='template_info'),
 
-
-    url(r'^image/upload/', UploadImageView.as_view(), name='upload_image'),
-    url(r'^image/list/', UploadImageView.as_view(), name='upload_image'),
+    url(r'^image/list/', ImageListView.as_view(), name='upload_image'),
+    url(r'^image/(\d+)/$', ImageView.as_view(), name='template_info'),
+    url(r'^image/', ImageView.as_view(), name='upload_image'),
 
     url(r'^email/', SendEmail.as_view(), name='send_email'),
-
-    url(r'^images/', include('images.urls')),
-
 
 ]

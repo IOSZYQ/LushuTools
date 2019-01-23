@@ -327,8 +327,6 @@
                         }
                     })
                 })
-
-
             },
             error:function (err) {
                 console.log(err)
@@ -337,7 +335,7 @@
     }
 
     $(function () {
-        // templateImg();
+        templateImg();
         var $li = $('.js-tab li');
         $li.on('click', function () {
             var index = $(this).index();
@@ -409,7 +407,8 @@
                     data: { imgData: base },
                     success: function (res) {
                         if (res.success == true) {
-                            alert('上传成功')
+                            alert('上传成功');
+                            window.location.reload();
                         }
                     },
                     error: function () {
@@ -432,6 +431,7 @@
                 success: function (res) {
                     if (res.success == 'true') {
                         alert('上传成功');
+                        window.location.reload();
                     }
                 },
                 error: function () {
