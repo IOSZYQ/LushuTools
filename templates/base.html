@@ -20,6 +20,7 @@
 
     <!-- Custom styles for this template -->
     <link href="signin.css" rel="stylesheet">
+
     <style>
         a, a:hover{
             text-decoration: none;
@@ -60,8 +61,8 @@
         }
 
         .img-content {
-            display: flex;
-            flex-wrap: wrap;
+            /* display: flex;
+            flex-wrap: wrap; */
         }
         .email-content li{
             padding:10px 20px;
@@ -74,38 +75,17 @@
         }
 
         .img-content li {
-            width: 23%;
             margin-right: 2%;
             margin-bottom: 18px;
-            list-style: none;
+            /* list-style: none; */
+            padding:10px 20px;
             position: relative;
-        }
-        .img-content li:hover .img-close-btn{
-            display: block;
+            border-bottom:1px solid #ddd;
         }
 
-        .img-content li img {
-            max-width: 100%;
-            width: auto;
-            max-height: 100%;
-            height: auto;
-        }
-        .img-close-btn{
-            display: none;
-            position: absolute;
-            top: 2px;
-            right: 4px;
-            cursor: pointer;
-        }
-        .email-content li:hover .email-close-btn{
-            display: block;
-        }
-        .email-close-btn{
-            display: none;
-            position: absolute;
-            top: 13px;
-            right: 4px;
-            cursor: pointer;
+        .img-content img {
+            width: 100px;
+            height: 100px;
         }
         .email-content li a{
           display: inline-block;
@@ -126,16 +106,6 @@
           width: 240px;
         }
     </style>
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 
 <body>
@@ -155,14 +125,8 @@
 
             </div>
             <h3 class="list-title">图片列表</h3>
-            <ul class="img-content js-img-list">
-                <!-- demo -->
-                <!-- <li>
-                    <img data-id="1" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1547541232352&di=22051771d00f4ada5440995992daf244&imgtype=0&src=http%3A%2F%2Fg.hiphotos.baidu.com%2Fimage%2Fpic%2Fitem%2Fe4dde71190ef76c6d1d9c6a49016fdfaaf516731.jpg" alt="">
-                    <i class="glyphicon glyphicon-remove img-close-btn"></i>
-                </li> -->
-                
-            </ul>
+            <ol class="img-content js-img-list">
+            </ol>
         </div>
         <div class="content-list"  style="display: none;">
             <div class="file-content">
@@ -174,17 +138,6 @@
             </div>
             <h3 class="list-title">邮件模板列表</h3>
             <ol class="email-content">
-                <!-- demo -->
-                <!-- <li>
-                    <a data-id="1" href="" target="_blank">测试废物家乐福范经理忘记改了；稳如狗刚接了个；二哥哥乌拉圭</a>
-                    <button class="btn btn-sm btn-info send-email" data-toggle="modal" data-target="#myModal" data-id="1">发送邮件</button>
-                    <i class="glyphicon glyphicon-remove email-close-btn"></i>
-                </li>
-                <li>
-                    <a data-id="1" href="" target="_blank">测试废物家乐福范经理忘记改了；稳如狗刚接了个；二哥哥乌拉圭</a>
-                    <button class="btn btn-sm btn-info send-email" data-toggle="modal" data-target="#myModal" data-id="1">发送邮件</button>
-                    <i class="glyphicon glyphicon-remove email-close-btn"></i>
-                </li> -->
             </ol>
         </div>
     </div>
@@ -217,10 +170,6 @@
           <input type="text" class="form-control" placeholder="邮件标题" name="emailSubject">
         </div>
         <div class="form-group form-inline">
-          <label class="inp-lab">邮件正文</label>
-          <textarea class="form-control" placeholder="邮件正文" rows="3" name="emailContext"></textarea>
-        </div>
-        <div class="form-group form-inline">
           <label class="inp-lab">定时发送</label>
           <div class="input-append date form_datetime form-control">
             <input size="16" type="text" value="" readonly style="border:none;" name="date">
@@ -251,21 +200,56 @@
     var emailId; // 邮件模板ID
     // 获取邮件列表
     function templateEmail() {
-        $.ajax({
-            url:'template/list/',
-            type:'get',
-            dataTytpe:'json',
-            success:function (res) {
-                var lists = res.result;
-                var html = '';
-                for (var  i = 0; i < lists.length; i++) {
-                    html += '<li><a href="http://'+lists[i].load+'" target="_blank" data-id="'+lists[i].id+'">'+lists[i].file+'</a><button class="btn btn-sm btn-info send-email" data-toggle="modal" data-target="#myModal" data-id="'+lists[i].id+'">发送邮件</button><i class="glyphicon glyphicon-remove email-close-btn"></i></li>';
+         $.ajax({
+             url:'template/list/',
+             type:'get',
+             dataTytpe:'json',
+             success:function (res) {
+                 var lists = res.result;
+
+                var html = '<div class="container">';
+                for (var i = 0; i < lists.length; i++) {
+
+                    var sendEmailInfo = '<div>'
+                    if (lists[i].sendEmailInfo && lists[i].sendEmailInfo.length > 0)
+                        for (var j = 0; j < lists[i].sendEmailInfo.length; j++) {
+                            var sendSuccess = lists[i].sendEmailInfo[j].sendSuccess ? '是' : '否';
+                            sendEmailInfo += '<div>';
+                            sendEmailInfo += '<span>' + (j + 1) + '.</span>&nbsp;';
+                            sendEmailInfo += '<span style="margin-right: 10px">收件人:' + lists[i].sendEmailInfo[j].sendTo + '</span>&nbsp;';
+                            sendEmailInfo += '<span style="margin-right: 10px">发送时间:' + lists[i].sendEmailInfo[j].dateTime + '</span>&nbsp;';
+                            sendEmailInfo += '<span style="margin-right: 10px">是否发送:' + sendSuccess + '</span>&nbsp;';
+                            sendEmailInfo += '</div>';
+                            console.log(lists[i].sendEmailInfo[j].sendSuccess)
+                        }
+                    sendEmailInfo += '</div>';
+                    
+
+                    html += 
+                        '<div class="row" style="margin: 10px 0px">' +
+                            '<div class="col-md-1">' +
+                                (i + 1) +
+                            '</div>' +
+                            '<div class="col-md-7">' +
+                                '<div><a href="'+lists[i].load+'" target="_blank" data-id="'+lists[i].id+'">'+lists[i].file+'</a></div>' +
+                                '<div>' + sendEmailInfo +'</div>' + 
+                            '</div>' +
+                            '<div class="col-md-2">' +
+                                '<button class="btn btn-info send-email" data-toggle="modal" data-target="#myModal" data-id="'+lists[i].id+'">发送邮件</button>' +
+                            '</div>' +
+                            '<div class="col-md-2">' +
+                                '<button class="btn btn-info send-email" id="email-close-btn" data-id="' + lists[i].id + '">' +
+                                    '删除' +
+                                '</button>' +
+                            '</div>' +
+                        '</div>';
                 }
+                html += '</div>';
                 $('.email-content').html(html);
 
                 //  邮件模板删除
-                $('.email-close-btn').on('click', function () {
-                    var id = $(this).prev().data('id');
+                $('#email-close-btn').on('click', function () {
+                    var id = $(this).data('id');
                     $.ajax({
                         url: 'template/' + id + '/',
                         type: 'delete',
@@ -273,6 +257,7 @@
                         success: function (res) {
                             if (res.success == true) {
                                 $('[data-id=' + id + ']').parent().remove();
+                                window.location.reload();
                             }else {
                                 alert(res.result.errMsg);
                             }
@@ -283,41 +268,59 @@
                     })
                 });
 
-              // 选择发送邮件
-              $('.send-email').on('click', function () {
-                emailId = $(this).data('id');
-              })
-            },
-            error:function (err) {
-                console.log(err)
-            }
-        })
+               // 选择发送邮件
+               $('.send-email').on('click', function () {
+                 emailId = $(this).data('id');
+                 console.log(emailId)
+               })
+             },
+             error:function (err) {
+                 console.log(err)
+             }
+         })
     }
     // 获取图片列表
     function templateImg() {
-        $.ajax({
-            url:'images/list/',
-            type:'get',
-            dataTytpe:'json',
-            success:function (res) {
-                var lists = JSON.parse(res).result;
-                var html = '';
+         $.ajax({
+             url:'image/list/',
+             type:'get',
+             dataTytpe:'json',
+             success:function (res) {
+                 var lists = res.result;
+                var html = '<div class="container">';
                 for (var  i = 0; i < lists.length; i++) {
-                    html += '<li><img src="'+lists[i].imageUrl+'" alt="" data-id="'+lists[i].imageFile+'"><i class="glyphicon glyphicon-remove img-close-btn"></i></li>';
+                    html += '<div class="row" style="margin: 10px 0px">' + 
+                                '<div class="col-md-1">' + 
+                                    (i + 1) + 
+                                '</div>' +
+                                '<div class="col-md-2">' + 
+                                    '<img src="' + lists[i].imageUrl + '" alt="" data-id="' + lists[i].imageFile + '"/>' +
+                                '</div>' + 
+                                '<div class="col-md-7">' + 
+                                    '<a target="_blank" href=' + lists[i].imageUrl + '>' + lists[i].imageUrl + '</a>' +
+                                '</div>' + 
+                                '<div class="col-md-2">' + 
+                                    '<button class="btn btn-info" id="img-close-btn" data-id="' + lists[i].id + '">' +
+                                        '删除' +
+                                    '</button>' + 
+                                '</div>' + 
+                            '</div>';
                 }
+                html += '</div>';
                 $('.img-content').html(html);
 
                 //  图片删除事件
-                $('.img-close-btn').on('click',function () {
+                $('#img-close-btn').on('click',function () {
 
-                    var id = $(this).prev().data('id');
+                    var id = $(this).data('id');
                     $.ajax({
-                        url: 'images/delete/' + id + '/',
+                        url: 'image/' + id + '/',
                         type: 'delete',
                         dataType:'json',
                         success: function (res) {
                             if (res.success == true) {
                                 $('[data-id=' + id + ']').parent().remove();
+                                window.location.reload();
                             }else {
                                 alert(res.result.errMsg);
                             }
@@ -327,11 +330,11 @@
                         }
                     })
                 })
-            },
-            error:function (err) {
-                console.log(err)
-            }
-        })
+             },
+             error:function (err) {
+                 console.log(err)
+             }
+         })
     }
 
     $(function () {
@@ -345,7 +348,8 @@
             }
             $(this).addClass('active')
             $('.content-list').eq(index).show();
-            {% comment %}{% endcomment %} if (index === 0) {
+             {% comment %}{% endcomment %}
+            if (index === 0) {
                  templateImg();
              } else {
                  templateEmail();
@@ -370,7 +374,6 @@
             sendWay: sendWay,
             sendTo: $('input[name=emailAddress]').val(),
             subject: $('input[name=emailSubject]').val(),
-            context: $('textarea[name=emailContext]').val(),
             template: emailId,
             date: $('input[name=date]').val(),
             configure: $('input[name=configure]').val(),
@@ -393,6 +396,19 @@
             }
           })
         })
+
+        function getObjectURL(file) {
+            var url = null;
+            if (window.createObjectURL != undefined) { // basic
+                url = window.createObjectURL(file);
+            } else if (window.URL != undefined) { // mozilla(firefox)
+                url = window.URL.createObjectURL(file);
+            } else if (window.webkitURL != undefined) { // webkit or chrome
+                url = window.webkitURL.createObjectURL(file);
+            }
+            return url;
+        }
+
         // 上传图片
         $('.file-dom-img').on('change', function (e) {
             var file = e.target.files[0];
@@ -401,10 +417,10 @@
             params.onload=function () {
                 var base = params.result; // 图片base64码
                 $.ajax({
-                    url: 'images/upload-data/',
+                    url: 'image/',
                     type: 'post',
                     dataType: 'json',
-                    data: { imgData: base },
+                    data: { imgData: base , name: file.name , path: getObjectURL(file)},
                     success: function (res) {
                         if (res.success == true) {
                             alert('上传成功');
@@ -429,7 +445,7 @@
                 contentType: false,
                 data: fd,
                 success: function (res) {
-                    if (res.success == 'true') {
+                    if (res.success == true) {
                         alert('上传成功');
                         window.location.reload();
                     }

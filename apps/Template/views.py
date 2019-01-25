@@ -3,7 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 import os, json, time, pytz
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
+import django.utils.timezone as timezone
 
 
 from toolset.viewUtils import viewResponse, viewErrorResponse
@@ -17,14 +18,14 @@ from django.template.loader import get_template
 
 
 from .forms import UploadTemplateForm
-from .tasks import sendMultiEmailDelay, sendCeleryEmail
+from .tasks import sendMultiEmailDelay
 
 from secretKeys import TEMPLATE_API_HOST, PASSWORD
 
 
 class TemplateView(APIView):
     def get(self, request, id):
-        file_name = Template.objects.filter(id=id).values_list('file', flat=True).first()
+        file_name = TemplateFile.objects.filter(id=id).values_list('file', flat=True).first()
         return render(request, file_name)
 
     def post(self, request, format=None):
@@ -32,12 +33,12 @@ class TemplateView(APIView):
         if file_form.is_valid():
             file = file_form.cleaned_data['file']
             name = str(file).replace(' ', '_')
-            html = Template.objects.filter(file=name)
+            html = TemplateFile.objects.filter(file=name)
             if len(html) > 0:
                 return viewErrorResponse("file exist")
 
             default_storage.save('templates/mail/{}'.format(name), ContentFile(file.read()))
-            template = Template.objects.create(file=name)
+            template = TemplateFile.objects.create(file=name)
             template_dic = {
                 "id": template.id,
                 "file": str(template.file),
@@ -47,7 +48,7 @@ class TemplateView(APIView):
 
 
     def delete(self, request, id):
-        file = Template.objects.filter(id=id)
+        file = TemplateFile.objects.filter(id=id)
         if len(file):
             file_name = file.first().file
             file_path = "{}/templates/mail/{}".format(settings.MEDIA_ROOT, file_name)
@@ -58,10 +59,17 @@ class TemplateView(APIView):
 
 class TemplateListView(APIView):
     def get(self, request):
-        allFiles = list(Template.objects.values('id', 'file'))
+        allFiles = TemplateFile.objects.prefetch_related('sendEmailInfos').all()
+        templateDic = []
         for file in allFiles:
-            file['load'] = '{}{}/'.format(TEMPLATE_API_HOST, file['id'])
-        return viewResponse(allFiles)
+            sendEmailInfos = file.sendEmailInfos.values('sendTo', 'dateTime', 'sendSuccess').order_by('-id')
+            templateDic.append({
+                'id': file.id,
+                'file': file.file.name,
+                'load':'{}/{}/'.format('template', file.id),
+                'sendEmailInfo': sendEmailInfos
+            })
+        return viewResponse(templateDic)
 
 
 class SendEmail(APIView):
@@ -73,8 +81,6 @@ class SendEmail(APIView):
         sendTo = request.data.get("sendTo")
         sendWay = int(request.data.get("sendWay"))
         template = int(request.data.get("template"))
-        # htmlPath = request.data.get("html")
-        # context = request.data.get("context")
         subject = request.data.get("subject")
         configure = request.data.get("configure")
         date = request.data.get("date")
@@ -88,9 +94,10 @@ class SendEmail(APIView):
                 # date = datetime.utcfromtimestamp(time_struct)
             except:
                 return viewErrorResponse("时间格式不对")
-            SendEmailInfo.objects.create(sendTo=sendTo, sendWay=sendWay, template=Template.objects.get(pk=template), subject=subject, dateTime=date)
+            SendEmailInfo.objects.create(sendTo=sendTo, sendWay=sendWay, template=TemplateFile.objects.get(pk=template), subject=subject, dateTime=date)
         else:
             sendMultiEmailDelay.delay(subject=subject, sendTo=sendTo, sendWay=sendWay, templateId=template, configure=configure)
+            SendEmailInfo.objects.create(sendTo=sendTo, sendWay=sendWay, template=TemplateFile.objects.get(pk=template), subject=subject, dateTime=timezone.now(), sendSuccess=True)
         return viewResponse()
 
 

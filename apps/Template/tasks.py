@@ -7,13 +7,11 @@ django.setup()
 
 import json, requests, secretKeys
 import django.utils.timezone as timezone
-
-from celery_app import app
+from celery import shared_task
 from django.template.loader import get_template
 from Template.models import SendEmailInfo, TemplateFile
 
-
-@app.task()
+@shared_task
 def sendMultiEmailDelay(subject, sendTo, sendWay, templateId=None, templateFile=None, configure=None):
     configure = json.loads(configure) if configure else {}
     htmlContent = None
@@ -34,7 +32,7 @@ def sendMultiEmailDelay(subject, sendTo, sendWay, templateId=None, templateFile=
 
 
 
-@app.task()
+@shared_task
 def sendCeleryEmail():
     notSendEmails = SendEmailInfo.objects.filter(sendSuccess=False, dateTime__lte=timezone.now())
     for emails in notSendEmails:
@@ -42,7 +40,7 @@ def sendCeleryEmail():
         sendTo = emails.sendTo
         sendWay = emails.sendWay
         templateFile = emails.template.file
-        sendMultiEmailDelay.delay(subject=subject, sendTo=sendTo, sendWay=sendWay, templateFile=templateFile)
+        sendMultiEmailDelay(subject=subject, sendTo=sendTo, sendWay=sendWay, templateFile=templateFile)
     notSendEmails.update(sendSuccess=True)
 
 

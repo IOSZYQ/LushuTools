@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
-import sys
+import os, sys
 import secretKeys
+from kombu import Exchange, Queue
+from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -41,14 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # "django_celery_results",
-    # 'django_celery_beat',
+    "django_celery_results",
+    'django_celery_beat',
 
     'rest_framework',
     'rest_framework.authtoken',
     'sorl.thumbnail',
     'corsheaders',
-    'images',
 
     'Template',
     'Image',
@@ -57,8 +57,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -180,10 +181,41 @@ QINIU_STATIC_DOMAIN = secretKeys.QINIU_STATIC_DOMAIN
 # celery  配置
 CELERY_BROKER_URL = 'redis://{0}:{1}/0'.format(secretKeys.REDIS_HOST, secretKeys.REDIS_PORT)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Shanghai'
-# CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CELERY_QUEUES = (
+    Queue('default', Exchange('default'), routing_key='for_default'),
+    Queue('beat', Exchange('beat'), routing_key='for_beat'),
+)
+CELERY_DEFAULT_EXCHANGE = 'default'
+CELERY_DEFAULT_EXCHANGE_TYPE = 'topic'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
+# 有些情况可以防止死锁
+CELERYD_FORCE_EXECV = True
+# 设置并发的worker数量
+CELERYD_CONCURRENCY = 4
+# 允许重试
+CELERY_ACKS_LATE = True
+# 每个worker最多执行100个任务被销毁，可以防止内存泄露
+CELERYD_MAX_TASKS_PER_CHILD = 100
+# 单个任务的最大运行时间
+CELERYD_TASK_TIME_LIMIT = 12 * 30
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'send_email': {
+        'task': 'Template.tasks.sendCeleryEmail',
+        'schedule': timedelta(minutes=10),
+        'options': {
+            'options': {'queue': 'beat', 'routing_key': 'for_beat'}
+        }
+    }
+}
 
 
 REST_FRAMEWORK = {
@@ -191,5 +223,12 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 1
 }
 
-# TEMPLATE_DIR = os.path.join(MEDIA_ROOT, 'templates/')
-# IMAGE_DIR = os.path.join(MEDIA_ROOT, 'images/')
+
+AccessKey = secretKeys.QINIU_ACCESS_KEY
+SecretKey = secretKeys.QINIU_SECRET_KEY
+
+bucket_name = secretKeys.QINIU_IMAGE_BUCKET
+remote_domain = secretKeys.QINIU_IMAGE_DOMAIN
+
+static_bucket_name = secretKeys.QINIU_STATIC_BUCKET
+static_remote_domain = secretKeys.QINIU_STATIC_DOMAIN

@@ -2,54 +2,47 @@ from django.shortcuts import render
 
 # Create your views here.
 import os, json
+
 from toolset.viewUtils import viewResponse, viewErrorResponse
 from rest_framework.views import APIView
-from django.conf import settings
-
 from Image.models import Image
-from images import imageUtils, utils
+
+from .tasks import *
 
 class ImageView(APIView):
     def get(self, request, id):
-        file_name = Image.objects.filter(id=id).values_list('file', flat=True).first()
-        if file_name:
-            file_name = os.path.join(settings.IMAGE_DIR, file_name)
-            return viewResponse({"fileName": file_name})
+        image = Image.objects.filter(id=id).values_list('file', flat=True).first()
+        if image:
+            return viewResponse({
+                "id": image.id,
+                "imageFile": image.imageName,
+                "imageUrl": request.build_absolute_uri(remoteImageUrl(image.imageName))
+            })
         else:
             return viewErrorResponse("dont exist")
 
     def post(self, request):
-        imgData = request.POST.get("imgData")
-
-        if not imgData:
-            imgData = json.loads(request.body.decode('utf-8'))["imgData"]
-
-        fileName = utils.saveImageData(imgData)
-        if fileName:
-            image = Image.objects.create(imageName=fileName)
+        imagePath = request.POST.get("path")
+        imageName = request.POST.get("name")
+        imageName = imageName.replace(' ', '').replace('/', '_')
+        if len(Image.objects.filter(imageName=imageName)):
+            return viewErrorResponse("照片已经存在")
+        key = remoteCacheImage.delay(imageName, localfile=imagePath)
+        if key:
+            image = Image.objects.create(imageName=imageName)
             return viewResponse({
                 "id": image.id,
-                "imageFile": fileName,
-                "imageUrl": request.build_absolute_uri(imageUtils.imageUrl(fileName))
+                "imageFile": image.imageName,
+                "imageUrl": request.build_absolute_uri(remoteImageUrl(image.imageName))
             })
-        raise viewErrorResponse("Bad Upload")
+        return viewErrorResponse("Bad Upload")
 
     def delete(self, request, id):
         try:
             id = int(id)
         except:
             viewErrorResponse("id error")
-        image = Image.objects.filter(id=id)
-        if len(image) == 0:
-            viewErrorResponse("image dont exist")
-        else:
-            #删除本地图片
-            imageName = image.first().imageName
-            for ext in ['.jpg', '.png']:
-                filePath = settings.MEDIA_ROOT + '/images/' + imageName + ext
-                if (os.path.exists(filePath)):
-                    os.remove(filePath)
-        image.delete()
+        Image.objects.filter(id=id).delete()
         return viewResponse()
 
 
@@ -60,6 +53,8 @@ class ImageListView(APIView):
             imageInfo.append({
                 "id": imageName["id"],
                 "imageFile": imageName["imageName"],
-                "imageUrl": request.build_absolute_uri(imageUtils.imageUrl(imageName["imageName"]))
+                "imageUrl": request.build_absolute_uri(remoteImageUrl(imageName["imageName"]))
             })
         return viewResponse(imageInfo)
+
+
